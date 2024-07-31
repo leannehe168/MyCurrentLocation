@@ -60,11 +60,11 @@ public class MainActivity extends AppCompatActivity {
             askPermission();
         }
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, new LocationListener() {
+        int time_ms =1000; //1 second
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time_ms, 0, new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                Log.d(TAG, "Update my location !!!");
-                //Log.d(TAG, ""+ location.getLatitude());
+                Log.d(TAG, "every " + time_ms + " ms, onLocationChanged will be called, and location will be updated");
                 updating_long_lat.setText("continue updating Lattitude: "+ location.getLatitude() + " Longitude: " + location.getLongitude());
 
             }
@@ -80,8 +80,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStatusChanged(String provider, int status,
-                                        Bundle extras) {
+            public void onStatusChanged(String provider, int status, Bundle extras) {
                 // TODO Auto-generated method stub
             }
         });
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                         if (location != null){
                             try {
                                 location.getAccuracy(); //5.0 default
-                                Log.d(TAG, "hanlin lat: " + location.getLatitude() + "  accuracy  : " + location.getAccuracy());
+                                Log.d(TAG, "my lat: " + location.getLatitude() + "  accuracy  : " + location.getAccuracy());
                                 Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
                                 List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                                 lattitude.setText("Last known Lattitude: " + addresses.get(0).getLatitude());
