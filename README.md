@@ -1,1 +1,2 @@
-get current location
+get current location using Android LocationManager
+FYI
