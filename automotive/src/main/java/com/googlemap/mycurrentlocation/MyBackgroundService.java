@@ -87,9 +87,11 @@ public class MyBackgroundService extends Service {
             }
         };
 
+        // Ensure permission is granted before requesting location updates
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //return 0;
+            return START_NOT_STICKY; // Don't continue if permission is missing
         }
+
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
 
         // If the service gets killed, Android will try to recreate it
@@ -100,6 +102,10 @@ public class MyBackgroundService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d("MyService", "Service Destroyed");
+        // Stop location updates when the service is destroyed
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+        }
     }
 
     @Override

@@ -70,9 +70,8 @@ public class MainActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time_ms, 0, new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                Log.d(TAG, "every " + time_ms + " ms, onLocationChanged will be called, and location will be updated");
+                //Log.d(TAG, "every " + time_ms + " ms, onLocationChanged will be called, and location will be updated");
                 updating_long_lat.setText("continue updating Lattitude: "+ location.getLatitude() + " Longitude: " + location.getLongitude());
-
             }
 
             @Override
@@ -91,20 +90,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        startBackgroundServieBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startLocationService();
-                finish();
-            }
+        startBackgroundServieBtn.setOnClickListener(v -> {
+            startLocationService();
+            //finish();
         });
 
-        stopBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopLocationService();
-            }
-        });
+        stopBtn.setOnClickListener(v -> stopLocationService());
 
         /*
         LocationRequest locationRequest = LocationRequest.create();
@@ -165,7 +156,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void askPermission() {
-        ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.ACCESS_BACKGROUND_LOCATION},REQUEST_CODE);
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        }, REQUEST_CODE);
     }
 
     @Override
@@ -184,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
     private void startLocationService() {
         Intent serviceIntent = new Intent(this, MyBackgroundService.class);
         startService(serviceIntent);
-        finish();
+        //finish();
     }
 
 
