@@ -7,6 +7,11 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -24,6 +29,13 @@
             </intent-filter>
             <meta-data android:name="distractionOptimized" android:value="true" />
         </activity>
+
+        <service android:name=".MyBackgroundService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <meta-data android:name="distractionOptimized" android:value="true" />
+
     </application>
 
 </manifest>

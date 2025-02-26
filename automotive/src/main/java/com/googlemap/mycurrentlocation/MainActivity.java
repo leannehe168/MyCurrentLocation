@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -20,21 +20,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationCallback locationCallback; // for running at background
     TextView lattitude, longitude, address, city, country, updating_long_lat;
-    Button getLocation;
+    Button getLocation, startBackgroundServieBtn;
     private final static int REQUEST_CODE = 100;
     String TAG = "GPS MainActivity";
     LocationManager locationManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         city = findViewById(R.id.city);
         country = findViewById(R.id.country);
         getLocation = findViewById(R.id.getLocation);
+        startBackgroundServieBtn = findViewById(R.id.startBackgroundService);
         updating_long_lat = findViewById(R.id.updating_long_lat);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -85,6 +88,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        startBackgroundServieBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startLocationService();
+                finish();
+            }
+        });
+
+        /*
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(1000); // 1 seconds
+        locationRequest.setFastestInterval(1000); // 1 s
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                Log.d(TAG, "onLocationResult");
+                if (locationResult != null && !locationResult.getLocations().isEmpty()) {
+
+                    locationResult.getLocations().forEach(location -> {
+                        // Handle the updated location
+                        double cur_latitude = location.getLatitude();
+                        double cur_longitude = location.getLongitude();
+                        // You can log the location or update your UI
+                        System.out.println("read my current Location (background): " + cur_latitude + ", " + cur_longitude);
+                    });
+
+                }
+                else{
+                    Log.d(TAG, "location is not available at this moment");
+                }
+            }
+        };
+
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+         */
 
     }
 
@@ -130,4 +170,28 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
+    private void startLocationService() {
+        Intent serviceIntent = new Intent(this, MyBackgroundService.class);
+        startService(serviceIntent);
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("MainActivity", "onPause called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Release (e.g., unregister sensors or listeners)
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
 }
