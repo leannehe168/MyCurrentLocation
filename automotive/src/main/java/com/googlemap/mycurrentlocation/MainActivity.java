@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback; // for running at background
     TextView lattitude, longitude, address, city, country, updating_long_lat;
-    Button getLocation, startBackgroundServieBtn;
+    Button getLocation, startBackgroundServieBtn, stopBtn;
     private final static int REQUEST_CODE = 100;
     String TAG = "GPS MainActivity";
     LocationManager locationManager;
@@ -41,6 +41,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            askPermission();
+        }
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -52,16 +58,13 @@ public class MainActivity extends AppCompatActivity {
         country = findViewById(R.id.country);
         getLocation = findViewById(R.id.getLocation);
         startBackgroundServieBtn = findViewById(R.id.startBackgroundService);
+        stopBtn = findViewById(R.id.stopService);
         updating_long_lat = findViewById(R.id.updating_long_lat);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getLocation.setOnClickListener(v -> getLastLocation());
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            askPermission();
-        }
 
         int time_ms =1000; //1 second
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time_ms, 0, new LocationListener() {
@@ -93,6 +96,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 startLocationService();
                 finish();
+            }
+        });
+
+        stopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopLocationService();
             }
         });
 
@@ -175,6 +185,12 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, MyBackgroundService.class);
         startService(serviceIntent);
         finish();
+    }
+
+
+    private void stopLocationService() {
+        Intent serviceIntent = new Intent(this, MyBackgroundService.class);
+        stopService(serviceIntent);
     }
 
     @Override

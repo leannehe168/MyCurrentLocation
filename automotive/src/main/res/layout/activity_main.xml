@@ -22,7 +22,7 @@
         android:layout_height="60dp"
         android:backgroundTint="@color/black"
         android:id="@+id/getLocation"
-        android:text="Get Location"
+        android:text="Get Location on Screen"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="10dp"/>
@@ -36,6 +36,16 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="100dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:backgroundTint="@color/black"
+        android:id="@+id/stopService"
+        android:text="stop"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="65dp"/>
 
     <TextView
         android:layout_width="wrap_content"
