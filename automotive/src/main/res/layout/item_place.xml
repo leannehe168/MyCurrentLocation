@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/place_name"
+        android:textSize="28sp"
+        android:text="Place Name"
+        android:textColor="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/place_address"
+        android:textSize="20sp"
+        android:text="Place Address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#888" />
+
+</LinearLayout>

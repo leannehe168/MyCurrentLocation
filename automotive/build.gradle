@@ -1,3 +1,5 @@
+
+
 plugins {
     id 'com.android.application'
 
@@ -41,11 +43,22 @@ dependencies {
 
 
     implementation 'com.google.android.material:material:1.2.1'
-    implementation 'com.google.android.gms:play-services-location:21.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'org.jetbrains:annotations:23.0.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+
+
+    implementation 'com.android.volley:volley:1.2.1'
+    // Google Maps SDK
+    implementation 'com.google.android.gms:play-services-maps:19.0.0'
+
+    // Google Play services for location
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
+
+    // Google Places SDK (if you're using Places API)
+    implementation 'com.google.android.libraries.places:places:4.1.0'
+
 
 }

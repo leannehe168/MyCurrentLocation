@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CODE = 100;
     String TAG = "GPS MainActivity";
     LocationManager locationManager;
-
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         setContentView(R.layout.activity_main);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         lattitude = findViewById(R.id.lattitude);
         longitude = findViewById(R.id.longitude);
         address = findViewById(R.id.address);
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         country = findViewById(R.id.country);
         getLocation = findViewById(R.id.getLocation);
         updating_long_lat = findViewById(R.id.updating_long_lat);
+
+        Button secondActBtn = findViewById(R.id.secondActBtn);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getLocation.setOnClickListener(v -> getLastLocation());
@@ -60,13 +65,12 @@ public class MainActivity extends AppCompatActivity {
             askPermission();
         }
 
-        int time_ms =1000; //1 second
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time_ms, 0, new LocationListener() {
+        int time_ms = 100; //0.5 second
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time_ms, 0, new LocationListener() { //GPS_PROVIDER
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                Log.d(TAG, "every " + time_ms + " ms, onLocationChanged will be called, and location will be updated");
-                updating_long_lat.setText("continue updating Lattitude: "+ location.getLatitude() + " Longitude: " + location.getLongitude());
-
+                //Log.d(TAG, "every " + time_ms + " ms, onLocationChanged will be called, and location will be updated");
+                updating_long_lat.setText("continue updating Lattitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
             }
 
             @Override
@@ -86,16 +90,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        secondActBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchGoogleMapPOI();
+            }
+        });
+
+
     }
 
-    private void getLastLocation(){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+    private void getLastLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(location -> {
-                        if (location != null){
+                        if (location != null) {
                             try {
                                 location.getAccuracy(); //5.0 default
-                                Log.d(TAG, "my lat: " + location.getLatitude() + "  accuracy  : " + location.getAccuracy());
+                                Log.d(TAG, "my lat: " + location.getLatitude() + "  accuracy  : " + location.getAccuracy()); //accuracy  : 3.315
                                 Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
                                 List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                                 lattitude.setText("Last known Lattitude: " + addresses.get(0).getLatitude());
@@ -103,31 +115,54 @@ public class MainActivity extends AppCompatActivity {
 
                                 address.setText("Address: " + addresses.get(0).getAddressLine(0));
                                 city.setText("City: " + addresses.get(0).getLocality());
-                                country.setText("Country: " +addresses.get(0).getCountryName());
+                                country.setText("Country: " + addresses.get(0).getCountryName());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                     });
-        }else {
+        } else {
             askPermission();
         }
     }
 
     private void askPermission() {
-        ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.ACCESS_BACKGROUND_LOCATION},REQUEST_CODE);
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_CODE);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull @org.jetbrains.annotations.NotNull String[] permissions, @NonNull @org.jetbrains.annotations.NotNull int[] grantResults) {
-        if (requestCode == REQUEST_CODE){
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLastLocation();
-
-            }else {
-                Toast.makeText(MainActivity.this,"Please provide the required permission",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "Please provide the required permission", Toast.LENGTH_SHORT).show();
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void launchGoogleMapPOI() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    // Get latitude and longitude
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
+                    // Create an Intent to send the data to SecondActivity
+                    Intent intent = new Intent(MainActivity.this, SearchPOI.class);
+                    intent.putExtra("latitude", latitude);
+                    intent.putExtra("longitude", longitude);
+                    // Start SecondActivity
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, "Location not found", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
