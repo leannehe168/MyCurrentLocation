@@ -6,6 +6,7 @@ In an effort to reduce power consumption, Android 8.0 (API level 26) limits how 
 
 
 **location listener** can receive location updates only a few times per hour, when the app is running in the background.
+
 **locationCallback**  can receive location updates when the app is running in background for automotive os.
 
 
