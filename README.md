@@ -1,4 +1,4 @@
-get current location using Android LocationManager google
+get current location using Google Android Location
 FYI
 
 Issue : 
