@@ -1,10 +1,13 @@
 package com.googlemap.mycurrentlocation;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -55,10 +58,14 @@ public class BootService extends Service {
 
     private Notification createNotification() {
         Log.d(TAG, "createNotification() called");
-        return new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Notification")
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("My Location Service")
+                .setContentText("Service is running in the background")
                 .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your icon
+                .setOngoing(true) // Make it non-dismissable (indicating it's still working)
                 .build();
     }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -71,7 +78,7 @@ public class BootService extends Service {
 
     public void keepReadingMyLocation(){
         Log.d(TAG, "Start read my location at background!");
-        LocationRequest locationRequest = new LocationRequest.Builder(2000) // Set the interval to 1000ms (1 second)
+        LocationRequest locationRequest = new LocationRequest.Builder(15000) // Set the interval to 1000ms (1 second)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setMaxUpdates(50) // Optional, limits the number of location updates
                 .build();
@@ -79,7 +86,7 @@ public class BootService extends Service {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
-                Log.d(TAG, "onLocationResult");
+
                 if (locationResult != null && !locationResult.getLocations().isEmpty()) {
 
                     locationResult.getLocations().forEach(location -> {
@@ -114,6 +121,20 @@ public class BootService extends Service {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
         }
     }
+
+
+    //To ensure that your service restarts if it's killed
+    /*
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        // Restart the service when it's removed from the task list
+        Intent intent = new Intent(getApplicationContext(), BootService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 1000, pendingIntent); // Restart in 1 second
+    }*/
+
 
     @Override
     public IBinder onBind(Intent intent) {

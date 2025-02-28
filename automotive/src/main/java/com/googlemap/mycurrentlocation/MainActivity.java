@@ -43,6 +43,11 @@ public class MainActivity extends AppCompatActivity {
             askPermission();
         }
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_CODE);
+        }
+
+
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         setContentView(R.layout.activity_main);
@@ -155,10 +160,10 @@ public class MainActivity extends AppCompatActivity {
     private void startBootService(){
         Log.d(TAG, "startBootService()!!");
         Intent serviceIntent = new Intent(MainActivity.this, BootService.class);
-        //startService(serviceIntent);
-        startForegroundService(serviceIntent);
-        moveTaskToBack(true);
-        //finish();
+        startService(serviceIntent);
+        //startForegroundService(serviceIntent);
+        //moveTaskToBack(true);
+        finish();
     }
 
     private void stopLocationService() {
