@@ -67,6 +67,13 @@ public class MyBackgroundService extends Service {
         locationRequest.setFastestInterval(1000); // 1 s
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+
+        //updated, but need to check! Use this later
+        LocationRequest locationReq = new LocationRequest.Builder(1000) // Set the interval to 1000ms (1 second)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setMaxUpdates(5) // Optional, limits the number of location updates
+                .build();
+
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
