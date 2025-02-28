@@ -169,6 +169,9 @@ public class MainActivity extends AppCompatActivity {
     private void stopLocationService() {
         Intent serviceIntent = new Intent(this, MyBackgroundService.class);
         stopService(serviceIntent);
+
+        Intent bootServiceIntent = new Intent(this, BootService.class);
+        stopService(bootServiceIntent);
     }
 
     @Override
