@@ -13,7 +13,6 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) ||
                 Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(intent.getAction())) {
-            // Start your service when boot is completed
             Log.d(TAG, "Boot completed. Starting service.");
 
             // Ensure the service is running in the foreground to avoid restrictions on background services
