@@ -1,4 +1,4 @@
-get current location using Android LocationManager google
+get current location using Google Android Location
 FYI
 
 Issue : 
@@ -13,3 +13,8 @@ In an effort to reduce power consumption, Android 8.0 (API level 26) limits how 
 
 video link app test : https://youtu.be/zfAmt5dN8N0 
  
+
+
+
+Final version:
+read current location at foreground  / background /  also when system boot up, it will auto launch the background service to read current location. 
