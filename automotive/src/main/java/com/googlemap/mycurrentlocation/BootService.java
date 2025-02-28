@@ -3,7 +3,7 @@ package com.googlemap.mycurrentlocation;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.app.Notification;
@@ -14,7 +14,6 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -22,55 +21,57 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-public class MyBackgroundService extends Service {
+public class BootService extends Service {
     FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback; // for running at background
     private static final String CHANNEL_ID = "MyServiceChannel";
-    private String TAG = "MyBackgroundService TAG";
+    Handler handler;
+    private String TAG = "BootService TAG";
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "Service Created");
-
+        Log.d(TAG, "Boot Service Created");
+        createNotificationChannel();
+        startForeground(1, createNotification());
+        handler = new Handler();
         // Initialize FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+    }
 
+    private void createNotificationChannel(){
         // Create a notification channel if running on Android Oreo or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    "My Background Service Channel",
+                    "My Boot Service Channel",
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
 
-        // Create a persistent notification
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Service is Running")
-                .setContentText("Your background task is active.")
-                .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your own icon
-                .build();
+    }
 
-        startForeground(1, notification); // 1 is the notification ID
+    private Notification createNotification() {
+        Log.d(TAG, "createNotification() called");
+        return new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Notification")
+                .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your icon
+                .build();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "Boot Service is running in the background.");
         Log.d(TAG, "Location Service Started");
+        keepReadingMyLocation();
+        // If the service gets killed, Android will try to recreate it
+        return START_STICKY; // or START_NOT_STICKY, START_REDELIVER_INTENT
+    }
 
-        // Do background location read here:
-        //deprecated
-        /*LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(1000); // 1 seconds
-        locationRequest.setFastestInterval(1000); // 1 s
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);*/
-
-
-        //updated, but need to check! Use this later
-        LocationRequest locationRequest = new LocationRequest.Builder(1000) // Set the interval to 1000ms (1 second)
+    public void keepReadingMyLocation(){
+        Log.d(TAG, "Start read my location at background!");
+        LocationRequest locationRequest = new LocationRequest.Builder(2000) // Set the interval to 1000ms (1 second)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setMaxUpdates(50) // Optional, limits the number of location updates
                 .build();
@@ -86,7 +87,7 @@ public class MyBackgroundService extends Service {
                         double cur_latitude = location.getLatitude();
                         double cur_longitude = location.getLongitude();
                         // You can log the location or update your UI
-                        System.out.println("read my current Location (background): " + cur_latitude + ", " + cur_longitude);
+                        System.out.println("read my current Location at background: " + cur_latitude + ", " + cur_longitude);
                     });
 
                 } else {
@@ -97,13 +98,11 @@ public class MyBackgroundService extends Service {
 
         // Ensure permission is granted before requesting location updates
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return START_NOT_STICKY; // Don't continue if permission is missing
+            return ; // Don't continue if permission is missing
         }
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
 
-        // If the service gets killed, Android will try to recreate it
-        return START_STICKY; // or START_NOT_STICKY, START_REDELIVER_INTENT
     }
 
     @Override

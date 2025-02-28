@@ -13,6 +13,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- Optional: Allow the receiver to be triggered even when the device is in a low-power state -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -34,7 +37,22 @@
             android:enabled="true"
             android:exported="true" />
 
+        <service android:name=".BootService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
+
         <meta-data android:name="distractionOptimized" android:value="true" />
+
+
+        <receiver android:name=".BootBroadcastReceiver" android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+
+        </receiver>
 
     </application>
 
