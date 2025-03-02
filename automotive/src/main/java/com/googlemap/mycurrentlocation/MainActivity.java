@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,12 +18,14 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationServices;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -30,9 +35,11 @@ public class MainActivity extends AppCompatActivity {
     private LocationCallback locationCallback;
     TextView lattitude, longitude, address, city, country, updating_long_lat;
     Button getLocation, startBackgroundServieBtn, stopBtn, startBootServiceBtn;
+    private Switch switchNotifications;
     private final static int REQUEST_CODE = 100;
     String TAG = "GPS MainActivity";
     LocationManager locationManager;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_CODE);
         }
 
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences("notification_settings_pref", Context.MODE_PRIVATE);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -61,18 +70,34 @@ public class MainActivity extends AppCompatActivity {
         stopBtn = findViewById(R.id.stopService);
         startBootServiceBtn = findViewById(R.id.startBootService);
         updating_long_lat = findViewById(R.id.updating_long_lat);
+        switchNotifications = findViewById(R.id.switch_notifications);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getLocation.setOnClickListener(v -> getLastLocation());
 
 
+        boolean isNotificationsEnabled = sharedPreferences.getBoolean("show_notifications", false);
+        switchNotifications.setChecked(isNotificationsEnabled);
 
-        int time_ms =1000; //1 second
+        //mySwitchLayout
+        switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean("show_notifications", isChecked).apply();
+            //TODO: turn on/off pop up notifications
+            if (isChecked) {
+                //TODO: start background location service
+            }
+            if (!isChecked) {
+                stopLocationService();
+            }
+        });
+
+
+        int time_ms = 1000; //1 second
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time_ms, 0, new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 //Log.d(TAG, "every " + time_ms + " ms, onLocationChanged will be called, and location will be updated");
-                updating_long_lat.setText("continue updating Lattitude: "+ location.getLatitude() + " Longitude: " + location.getLongitude());
+                updating_long_lat.setText("continue updating Lattitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
             }
 
             @Override
@@ -106,11 +131,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getLastLocation(){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+    private void getLastLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(location -> {
-                        if (location != null){
+                        if (location != null) {
                             try {
                                 location.getAccuracy(); //5.0 default
                                 Log.d(TAG, "my lat: " + location.getLatitude() + "  accuracy  : " + location.getAccuracy());
@@ -121,13 +146,13 @@ public class MainActivity extends AppCompatActivity {
 
                                 address.setText("Address: " + addresses.get(0).getAddressLine(0));
                                 city.setText("City: " + addresses.get(0).getLocality());
-                                country.setText("Country: " +addresses.get(0).getCountryName());
+                                country.setText("Country: " + addresses.get(0).getCountryName());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                     });
-        }else {
+        } else {
             askPermission();
         }
     }
@@ -141,12 +166,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull @org.jetbrains.annotations.NotNull String[] permissions, @NonNull @org.jetbrains.annotations.NotNull int[] grantResults) {
-        if (requestCode == REQUEST_CODE){
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLastLocation();
 
-            }else {
-                Toast.makeText(MainActivity.this,"Please provide the required permission",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "Please provide the required permission", Toast.LENGTH_SHORT).show();
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -157,13 +182,13 @@ public class MainActivity extends AppCompatActivity {
         startService(serviceIntent);
     }
 
-    private void startBootService(){
+    private void startBootService() {
         Log.d(TAG, "startBootService()!!");
         Intent serviceIntent = new Intent(MainActivity.this, BootService.class);
         startService(serviceIntent);
         //startForegroundService(serviceIntent);
-        //moveTaskToBack(true);
-        finish();
+        moveTaskToBack(true);
+        //finish();
     }
 
     private void stopLocationService() {
@@ -177,6 +202,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

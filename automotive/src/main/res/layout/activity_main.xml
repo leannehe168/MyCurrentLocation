@@ -9,127 +9,137 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:text="Location"
-
-        android:textColor="@color/black"
         android:layout_marginTop="20dp"
-        android:textSize="40dp"/>
+        android:text="Location"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="40dp" />
 
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:backgroundTint="@color/black"
         android:id="@+id/getLocation"
-        android:text="Get Location on Screen"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"/>
-
-    <Button
         android:layout_width="wrap_content"
         android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="2dp"
         android:backgroundTint="@color/black"
+        android:text="Get Location on Screen" />
+
+
+    <Switch
+        android:id="@+id/switch_notifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="200dp"
+        android:text="notification"
+
+        />
+
+    <Button
         android:id="@+id/startBootService"
-        android:text="start service at back"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="130dp"/>
-
-
-
-    <Button
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:backgroundTint="@color/black"
-        android:id="@+id/startBackgroundService"
-        android:text="start background service at front"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="100dp"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="130dp"
+        android:backgroundTint="@color/black"
+        android:text="start service at back" />
+
 
     <Button
+        android:id="@+id/startBackgroundService"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="100dp"
+        android:backgroundTint="@color/black"
+        android:text="start background service at front" />
+
+    <Button
+        android:id="@+id/stopService"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:backgroundTint="@color/black"
-        android:id="@+id/stopService"
-        android:text="stop"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="65dp"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="45dp"
+        android:backgroundTint="@color/black"
+        android:text="stop" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/lattitude"
-        android:text="Last Lattitude"
-        android:textSize="25dp"
-        android:layout_marginTop="150dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="150dp"
         android:layout_marginBottom="20dp"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:text="Last Lattitude"
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/longitude"
-        android:layout_alignStart="@id/lattitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/lattitude"
+        android:layout_alignStart="@id/lattitude"
+        android:layout_marginBottom="20dp"
         android:text="Last Longitude"
+        android:textColor="@color/black"
         android:textSize="25dp"
-        android:layout_marginBottom="20dp"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/address"
-        android:layout_alignStart="@id/lattitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/longitude"
+        android:layout_alignStart="@id/lattitude"
+        android:layout_marginBottom="20dp"
         android:text="Address"
+        android:textColor="@color/black"
         android:textSize="25dp"
-        android:layout_marginBottom="20dp"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/city"
-        android:layout_alignStart="@id/lattitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/address"
+        android:layout_alignStart="@id/lattitude"
+        android:layout_marginBottom="20dp"
         android:text="City"
+        android:textColor="@color/black"
         android:textSize="25dp"
-        android:layout_marginBottom="20dp"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/country"
-        android:layout_alignStart="@id/lattitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/city"
-        android:text="Country"
-        android:textSize="25dp"
+        android:layout_alignStart="@id/lattitude"
         android:layout_marginBottom="20dp"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:text="Country"
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        android:textStyle="bold" />
 
 
     <TextView
+        android:id="@+id/updating_long_lat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/updating_long_lat"
-        android:layout_alignStart="@id/lattitude"
         android:layout_below="@+id/country"
-        android:text="Updating "
-        android:textSize="25dp"
+        android:layout_alignStart="@id/lattitude"
         android:layout_marginBottom="20dp"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:text="Updating "
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        android:textStyle="bold" />
 
 </RelativeLayout>
