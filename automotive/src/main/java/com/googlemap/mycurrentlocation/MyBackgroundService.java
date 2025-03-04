@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -60,15 +61,12 @@ public class MyBackgroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Location Service Started");
+        requestLocationUpdate();
+        // If the service gets killed, Android will try to recreate it
+        return START_STICKY; // or START_NOT_STICKY, START_REDELIVER_INTENT
+    }
 
-        // Do background location read here:
-        //deprecated
-        /*LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(1000); // 1 seconds
-        locationRequest.setFastestInterval(1000); // 1 s
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);*/
-
-
+    private void requestLocationUpdate() {
         //updated, but need to check! Use this later
         LocationRequest locationRequest = new LocationRequest.Builder(1000) // Set the interval to 1000ms (1 second)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -80,7 +78,6 @@ public class MyBackgroundService extends Service {
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Log.d(TAG, "onLocationResult");
                 if (locationResult != null && !locationResult.getLocations().isEmpty()) {
-
                     locationResult.getLocations().forEach(location -> {
                         // Handle the updated location
                         double cur_latitude = location.getLatitude();
@@ -93,17 +90,22 @@ public class MyBackgroundService extends Service {
                     Log.d(TAG, "location is not available at this moment");
                 }
             }
+            @Override
+            public void onLocationAvailability(LocationAvailability locationAvailability) {
+                // Called when the location service is available or unavailable
+                Log.d("Location", "Location service is unavailable.");
+
+                if (!locationAvailability.isLocationAvailable()) {
+                    Log.d("Location", "Location service is unavailable.");
+                }
+            }
         };
 
         // Ensure permission is granted before requesting location updates
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return START_NOT_STICKY; // Don't continue if permission is missing
+            return; // Don't continue if permission is missing
         }
-
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-
-        // If the service gets killed, Android will try to recreate it
-        return START_STICKY; // or START_NOT_STICKY, START_REDELIVER_INTENT
     }
 
     @Override
