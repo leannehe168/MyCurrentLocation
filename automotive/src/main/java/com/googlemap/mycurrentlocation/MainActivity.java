@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
             sharedPreferences.edit().putBoolean("show_notifications", isChecked).apply();
             //TODO: turn on/off pop up notifications
             if (isChecked) {
+                //start your service
                 //TODO: start background location service
             }
             if (!isChecked) {
@@ -123,10 +124,6 @@ public class MainActivity extends AppCompatActivity {
         stopBtn.setOnClickListener(v -> stopLocationService());
         startBootServiceBtn.setOnClickListener(v -> {
             startBootService();
-            // Minimize the app and send it to the background
-            //moveTaskToBack(true);
-            //or
-            //finish();
         });
 
     }
