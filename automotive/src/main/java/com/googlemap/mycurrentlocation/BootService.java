@@ -122,7 +122,6 @@ public class BootService extends Service {
         }
     }
 
-
     //To ensure that your service restarts if it's killed
     /*
     @Override
@@ -134,7 +133,6 @@ public class BootService extends Service {
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 1000, pendingIntent); // Restart in 1 second
     }*/
-
 
     @Override
     public IBinder onBind(Intent intent) {

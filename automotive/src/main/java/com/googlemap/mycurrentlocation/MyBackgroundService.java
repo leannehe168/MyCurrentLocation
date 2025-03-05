@@ -121,4 +121,3 @@ public class MyBackgroundService extends Service {
         return null; // This service doesn't support binding
     }
 }
-
