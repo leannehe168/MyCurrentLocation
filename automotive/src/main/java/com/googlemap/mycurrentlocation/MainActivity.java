@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     String TAG = "GPS MainActivity";
     LocationManager locationManager;
     private SharedPreferences sharedPreferences;
+    private InstallPackageReceiver installPackageReceiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_CODE);
         }
+
+        // Initialize the receiver
+        installPackageReceiver = new InstallPackageReceiver();
 
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("notification_settings_pref", Context.MODE_PRIVATE);
@@ -210,6 +216,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent); // Update the intent so it's accessible in onResume or other methods
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart() called");
+        // Dynamically register the InstallPackageReceiver to listen for package added events
+        IntentFilter filter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
+        filter.addDataScheme("package"); // Required to get the package name from the URI
+        registerReceiver(installPackageReceiver, filter);
+        Log.d(TAG, "Receiver registered");
     }
 
 }

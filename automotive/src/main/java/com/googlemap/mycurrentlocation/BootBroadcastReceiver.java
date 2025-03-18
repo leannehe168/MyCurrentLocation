@@ -13,8 +13,9 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()) ||
-                Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(intent.getAction())) {
+        String action = intent.getAction();
+        Log.d(TAG, "onReceive called!");
+        if (Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(action)) {
             Log.d(TAG, "Boot completed. Starting service.");
 
             sharedPreferences = context.getSharedPreferences("notification_settings_pref", Context.MODE_PRIVATE);
@@ -33,6 +34,14 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
                 Log.d(TAG, "Rebooted, but notification was turned off.");
                 stopLocationService(context);
             }
+        }
+
+        if (Intent.ACTION_PACKAGE_ADDED.equals(action)){
+            Log.d(TAG, "ACTION_PACKAGE_ADDED detected!!.");
+        }
+
+        else{
+            Log.d(TAG, "Does not detect.");
         }
     }
 
